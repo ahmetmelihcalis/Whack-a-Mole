@@ -25,6 +25,14 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == nullptr)
+    {
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
     bool isRunning = true;
     SDL_Event event;
 
@@ -38,9 +46,16 @@ int main(int argc, char *argv[])
             }
         }
 
-        SDL_Delay(16); // 60 FPS sabitleme için bekleme
+        SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);
+        
+        SDL_RenderClear(renderer);
+        
+        SDL_RenderPresent(renderer);
+
+        SDL_Delay(16); // 60 FPS sabitleme
     }
 
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 
