@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include "Mole.h"
 
 class Game {
 public:
@@ -19,8 +20,7 @@ private:
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
     
-    SDL_Texture *moleTexture = nullptr; 
-    SDL_Rect moleRectangle;
+    Mole moles[9];
 };
 
 #endif

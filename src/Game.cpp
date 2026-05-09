@@ -14,14 +14,23 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
             SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);
         }
 
-        SDL_Surface* rawImage = IMG_Load("../assets/mole.png");
-        moleTexture = SDL_CreateTextureFromSurface(renderer, rawImage);
-        SDL_FreeSurface(rawImage); 
+        // 3x3 Izgara
+        int startX = 415;  
+        int startY = 135;  
+        int spacing = 150; 
 
-        moleRectangle.x = 350; 
-        moleRectangle.y = 250; 
-        moleRectangle.w = 100; 
-        moleRectangle.h = 100; 
+        for (int i = 0; i < 9; i++) {
+            int row = i / 3; 
+            int col = i % 3; 
+            
+            int x = startX + (col * spacing);
+            int y = startY + (row * spacing);
+            
+            moles[i].init(renderer, x, y);
+        }
+
+        moles[4].popUp();
+        moles[0].popUp();
 
         isRunning = true; 
     } else {
@@ -32,30 +41,30 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
 void Game::handleEvents() {
     SDL_Event event;
     SDL_PollEvent(&event);
-    
     if (event.type == SDL_QUIT) {
         isRunning = false;
     }
 }
 
-bool Game::running() {
-    return isRunning;
+bool Game::running() { 
+    return isRunning; 
 }
 
 void Game::update() {
-    // Şimdilik boş bırakıldı
+    for (int i = 0; i < 9; i++) {
+        moles[i].update();
+    }
 }
 
 void Game::render() {
     SDL_RenderClear(renderer); 
-    
-    SDL_RenderCopy(renderer, moleTexture, NULL, &moleRectangle);
-    
+    for (int i = 0; i < 9; i++) {
+        moles[i].render(renderer);
+    }
     SDL_RenderPresent(renderer); 
 }
 
 void Game::clean() {
-    SDL_DestroyTexture(moleTexture);
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();
