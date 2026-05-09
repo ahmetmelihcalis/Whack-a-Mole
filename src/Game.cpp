@@ -1,4 +1,6 @@
 #include "Game.h"
+#include <cstdlib> 
+#include <ctime> 
 
 void Game::init(const char *title, int xposition, int yposition, int width, int height, bool fullscreen) {
     int flags = 0;
@@ -14,7 +16,6 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
             SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);
         }
 
-        // 3x3 Izgara
         int startX = 415;  
         int startY = 135;  
         int spacing = 150; 
@@ -29,8 +30,9 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
             moles[i].init(renderer, x, y);
         }
 
-        moles[4].popUp();
-        moles[0].popUp();
+        srand(time(nullptr)); 
+        
+        lastSpawnTime = SDL_GetTicks();
 
         isRunning = true; 
     } else {
@@ -40,9 +42,10 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
 
 void Game::handleEvents() {
     SDL_Event event;
-    SDL_PollEvent(&event);
-    if (event.type == SDL_QUIT) {
-        isRunning = false;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            isRunning = false;
+        }
     }
 }
 
@@ -53,6 +56,17 @@ bool Game::running() {
 void Game::update() {
     for (int i = 0; i < 9; i++) {
         moles[i].update();
+    }
+
+    if (SDL_GetTicks() - lastSpawnTime > spawnInterval) {
+        
+        int randomIndex = rand() % 9;
+        
+        if (!moles[randomIndex].isShowing()) {
+            moles[randomIndex].popUp();
+        }
+
+        lastSpawnTime = SDL_GetTicks();
     }
 }
 

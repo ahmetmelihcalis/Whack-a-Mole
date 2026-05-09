@@ -16,9 +16,13 @@ public:
 
 private:
     SDL_Texture *texture = nullptr; 
-    SDL_Rect moleRectangle;
+    SDL_Rect moleRectangle; 
     
     bool isUp = false; 
+    
+    // Zamanlayıcı Değişkenleri
+    Uint32 popUpTime = 0;         // Çıktığı anki saati tutacak kısım
+    Uint32 stayUpDuration = 1000; // Kaç milisaniye dışarıda kalacağını tutan kısım
 };
 
 #endif

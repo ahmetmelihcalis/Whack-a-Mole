@@ -20,7 +20,11 @@ private:
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
     
-    Mole moles[9];
+    Mole moles[9]; 
+
+    // Oyun Motorunun Zamanlayıcı Değişkenleri
+    Uint32 lastSpawnTime = 0;     // Son köstebeğin çıktığı an
+    Uint32 spawnInterval = 800;   // Her 800 milisaniyede bir deneme yapılması için
 };
 
 #endif

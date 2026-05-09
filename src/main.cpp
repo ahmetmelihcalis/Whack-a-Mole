@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
         game.handleEvents();
         game.update();
         game.render();
-        SDL_Delay(16); 
+        SDL_Delay(16); // 60 FPS
     }
 
     game.clean();

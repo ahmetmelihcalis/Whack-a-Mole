@@ -1,6 +1,6 @@
 #include "Mole.h"
 
-void Mole::init(SDL_Renderer *renderer, int startX, int startY) {
+void Mole::init(SDL_Renderer* renderer, int startX, int startY) {
     SDL_Surface *rawImage = IMG_Load("../assets/mole.png");
     texture = SDL_CreateTextureFromSurface(renderer, rawImage);
     SDL_FreeSurface(rawImage);
@@ -14,7 +14,10 @@ void Mole::init(SDL_Renderer *renderer, int startX, int startY) {
 }
 
 void Mole::popUp() {
-    isUp = true;
+    if (!isUp) {
+        isUp = true;
+        popUpTime = SDL_GetTicks();
+    }
 }
 
 void Mole::hide() {
@@ -26,10 +29,14 @@ bool Mole::isShowing() {
 }
 
 void Mole::update() {
-    // Şimdilik boş bırakıldı
+    if (isUp) {
+        if (SDL_GetTicks() - popUpTime > stayUpDuration) {
+            hide();
+        }
+    }
 }
 
-void Mole::render(SDL_Renderer *renderer) {
+void Mole::render(SDL_Renderer* renderer) {
     if (isUp) {
         SDL_RenderCopy(renderer, texture, NULL, &moleRectangle);
     }
