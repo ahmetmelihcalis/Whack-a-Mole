@@ -14,4 +14,8 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2)
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+    SDL2::SDL2main 
+    SDL2::SDL2 
+    -lSDL2_image
+)

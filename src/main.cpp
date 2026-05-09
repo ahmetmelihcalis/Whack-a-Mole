@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
         game.update();
         game.render();
         
-        SDL_Delay(16); 
+        SDL_Delay(16);
     }
 
     game.clean();
