@@ -1,7 +1,7 @@
 #include "Mole.h"
 
-void Mole::init(SDL_Renderer* renderer, int startX, int startY) {
-    SDL_Surface *rawImage = IMG_Load("../assets/mole.png");
+void Mole::init(SDL_Renderer *renderer, int startX, int startY) {
+    SDL_Surface* rawImage = IMG_Load("../assets/mole.png");
     texture = SDL_CreateTextureFromSurface(renderer, rawImage);
     SDL_FreeSurface(rawImage);
 
@@ -28,6 +28,17 @@ bool Mole::isShowing() {
     return isUp;
 }
 
+bool Mole::handleInput(int mouseX, int mouseY) {
+    if (isUp) {
+        SDL_Point mousePoint = { mouseX, mouseY };
+        if (SDL_PointInRect(&mousePoint, &moleRectangle)) {
+            hide();
+            return true;
+        }
+    }
+    return false;
+}
+
 void Mole::update() {
     if (isUp) {
         if (SDL_GetTicks() - popUpTime > stayUpDuration) {
@@ -36,7 +47,7 @@ void Mole::update() {
     }
 }
 
-void Mole::render(SDL_Renderer* renderer) {
+void Mole::render(SDL_Renderer *renderer) {
     if (isUp) {
         SDL_RenderCopy(renderer, texture, NULL, &moleRectangle);
     }
