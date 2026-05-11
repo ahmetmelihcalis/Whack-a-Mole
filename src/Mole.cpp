@@ -1,7 +1,7 @@
 #include "Mole.h"
 
 void Mole::init(SDL_Renderer *renderer, int startX, int startY) {
-    SDL_Surface* rawImage = IMG_Load("../assets/mole.png");
+    SDL_Surface *rawImage = IMG_Load("../assets/mole.png");
     texture = SDL_CreateTextureFromSurface(renderer, rawImage);
     SDL_FreeSurface(rawImage);
 

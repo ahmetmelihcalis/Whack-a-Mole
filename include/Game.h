@@ -3,7 +3,11 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#include <string>
 #include "Mole.h"
+
+enum GameState { MENU, PLAYING, GAMEOVER };
 
 class Game {
 public:
@@ -13,19 +17,28 @@ public:
     void render();
     void clean();
     bool running(); 
+    void updateScoreText(); 
 
 private:
     bool isRunning = false; 
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
     
-    Mole moles[9]; 
+    Mole moles[9];
 
     // Oyun Motorunun Zamanlayıcı Değişkenleri
     Uint32 lastSpawnTime = 0;     // Son köstebeğin çıktığı an
     Uint32 spawnInterval = 800;   // Her 800 milisaniyede bir deneme yapılması için
+    int score = 0; 
 
-    int score = 0; // Skor takibi
+    TTF_Font *font = nullptr;
+    SDL_Texture *scoreTexture = nullptr;
+    SDL_Rect scoreRectangle;
+
+    // Durum Makinesi ve Menü Elemanları
+    GameState currentState = MENU; 
+    SDL_Texture *menuTextTexture = nullptr;
+    SDL_Rect menuButtonRectangle;
 };
 
 #endif
