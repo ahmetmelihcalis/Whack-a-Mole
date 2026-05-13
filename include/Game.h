@@ -17,7 +17,8 @@ public:
     void render();
     void clean();
     bool running(); 
-    void updateScoreText(); 
+    void updateScoreText();
+    void updateTimerText();
 
 private:
     bool isRunning = false; 
@@ -39,6 +40,17 @@ private:
     GameState currentState = MENU; 
     SDL_Texture *menuTextTexture = nullptr;
     SDL_Rect menuButtonRectangle;
+
+    // Süre ve Game Over Değişkenleri
+    Uint32 gameStartTime = 0;      // Oyunun başladığı an
+    int timeLimit = 60;            // Oyun süresi
+    int timeRemaining = 60;        // Kalan süre
+    
+    SDL_Texture* timerTexture = nullptr;
+    SDL_Rect timerRectangle;       // Sayacın ekrandaki yeri
+    
+    SDL_Texture* gameOverTextTexture = nullptr;
+    SDL_Rect gameOverRectangle;    // Game over yazısının yeri
 };
 
 #endif
