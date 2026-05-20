@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h> 
 #include <string>
 #include "Mole.h"
 
@@ -46,11 +47,14 @@ private:
     int timeLimit = 60;            // Oyun süresi
     int timeRemaining = 60;        // Kalan süre
     
-    SDL_Texture* timerTexture = nullptr;
+    SDL_Texture *timerTexture = nullptr;
     SDL_Rect timerRectangle;       // Sayacın ekrandaki yeri
     
-    SDL_Texture* gameOverTextTexture = nullptr;
+    SDL_Texture *gameOverTextTexture = nullptr;
     SDL_Rect gameOverRectangle;    // Game over yazısının yeri
+    
+    // Ses efekti için kullanılacak pointer
+    Mix_Chunk *hitSound = nullptr; 
 };
 
 #endif

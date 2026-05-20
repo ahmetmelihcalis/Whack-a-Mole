@@ -18,6 +18,17 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
         TTF_Init();
         font = TTF_OpenFont("../assets/arial.ttf", 32);
         
+        // Ses Sistemini Başlatma (Mixer)
+        if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+            cout << "Ses sistemi başlatılamadı! Hata: " << Mix_GetError() << endl;
+        }
+        
+        // Vuruş sesini hafızaya yükleme
+        hitSound = Mix_LoadWAV("../assets/hit.wav");
+        if (hitSound == nullptr) {
+            cout << "hit.wav dosyası yüklenemedi! Hata: " << Mix_GetError() << endl;
+        }
+        
         SDL_Color white = {255, 255, 255, 255}; // Beyaz renk tanımlaması
 
         // Menü yazısını resme dönüştürme
@@ -114,6 +125,11 @@ void Game::handleEvents() {
             else if (currentState == PLAYING) {
                 for (int i = 0; i < 9; i++) {
                     if (moles[i].handleInput(mx, my)) { 
+                        // Köstebeğe başarıyla vurulduğunda sesi çalma
+                        if (hitSound != nullptr) {
+                            Mix_PlayChannel(-1, hitSound, 0); 
+                        }
+                        
                         score += 10; 
                         updateScoreText();
                     }
@@ -200,6 +216,13 @@ void Game::clean() {
     SDL_DestroyTexture(scoreTexture);
     SDL_DestroyTexture(timerTexture);
     SDL_DestroyTexture(gameOverTextTexture);
+    
+    // Ses dosyasını ve Mixer sistemini hafızadan temizleme
+    if (hitSound != nullptr) {
+        Mix_FreeChunk(hitSound);
+    }
+    Mix_CloseAudio();
+    
     TTF_CloseFont(font);
     TTF_Quit();
 
