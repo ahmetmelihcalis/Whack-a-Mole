@@ -14,49 +14,23 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
         window = SDL_CreateWindow(title, xposition, yposition, width, height, flags);
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
         
-        // Font sistemini başlatma ve yükleme
-        TTF_Init();
-        font = TTF_OpenFont("../assets/arial.ttf", 32);
-        
+        // UI sistemini başlatma
+        ui.init(renderer, "../assets/arial.ttf", 32);
+
         // Ses Sistemini Başlatma (Mixer)
         if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-            cout << "Ses sistemi başlatılamadı! Hata: " << Mix_GetError() << endl;
+            cout << "Ses sistemi baslatilamadi! Hata: " << Mix_GetError() << endl;
         }
         
         // Vuruş sesini hafızaya yükleme
         hitSound = Mix_LoadWAV("../assets/hit.wav");
         if (hitSound == nullptr) {
-            cout << "hit.wav dosyası yüklenemedi! Hata: " << Mix_GetError() << endl;
+            cout << "hit.wav dosyasi yuklenemedi! Hata: " << Mix_GetError() << endl;
         }
         
-        SDL_Color white = {255, 255, 255, 255}; // Beyaz renk tanımlaması
-
-        // Menü yazısını resme dönüştürme
-        SDL_Surface *menuSurf = TTF_RenderText_Solid(font, "OYUNA BAŞLAMAK İÇİN TIKLA", white);
-        menuTextTexture = SDL_CreateTextureFromSurface(renderer, menuSurf);
-        // Yazı hizalama
-        menuButtonRectangle.x = (1280 / 2) - (menuSurf->w / 2);
-        menuButtonRectangle.y = (720 / 2) - (menuSurf->h / 2);
-        menuButtonRectangle.w = menuSurf->w;
-        menuButtonRectangle.h = menuSurf->h;
-        SDL_FreeSurface(menuSurf); // Hafızayı temizlememe
-
-        SDL_Surface *gameOverSurf = TTF_RenderText_Solid(font, "SÜRE BİTTİ! TIKLA VE MENÜDEN BAŞTAN BAŞLA", white);
-        gameOverTextTexture = SDL_CreateTextureFromSurface(renderer, gameOverSurf);
-        gameOverRectangle.x = (1280 / 2) - (gameOverSurf->w / 2);
-        gameOverRectangle.y = (720 / 2) - (gameOverSurf->h / 2);
-        gameOverRectangle.w = gameOverSurf->w;
-        gameOverRectangle.h = gameOverSurf->h;
-        SDL_FreeSurface(gameOverSurf);
-
-        // Skor ve Süre Hazırlığı
-        scoreRectangle.x = 1000; 
-        scoreRectangle.y = 30;
-        updateScoreText(); 
-
-        timerRectangle.x = 50;  
-        timerRectangle.y = 30;
-        updateTimerText();
+        // İlk Skor ve Süre metinlerini hazırlama
+        ui.updateScore(renderer, score);
+        ui.updateTimer(renderer, timeRemaining);
 
         // 3x3 Izgara
         int startX = 415;  
@@ -75,28 +49,6 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
     }
 }
 
-// Skoru metin olarak güncelleme ve hafızaya alma
-void Game::updateScoreText() {
-    if (scoreTexture != nullptr) SDL_DestroyTexture(scoreTexture); 
-    string scoreText = "Skor: " + to_string(score);
-    SDL_Surface *textSurface = TTF_RenderText_Solid(font, scoreText.c_str(), {255, 255, 255, 255});
-    scoreRectangle.w = textSurface->w;
-    scoreRectangle.h = textSurface->h;
-    scoreTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    SDL_FreeSurface(textSurface); 
-}
-
-// Kalan süreyi metin olarak güncelleme ve hafızaya alma
-void Game::updateTimerText() {
-    if (timerTexture != nullptr) SDL_DestroyTexture(timerTexture);
-    string timerText = "Sure: " + to_string(timeRemaining);
-    SDL_Surface *textSurface = TTF_RenderText_Solid(font, timerText.c_str(), {255, 255, 255, 255});
-    timerRectangle.w = textSurface->w;
-    timerRectangle.h = textSurface->h;
-    timerTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    SDL_FreeSurface(textSurface); 
-}
-
 // Kullanıcı girdilerini yakalama
 void Game::handleEvents() {
     SDL_Event event;
@@ -112,12 +64,13 @@ void Game::handleEvents() {
 
             // DURUM 1: Ana Menü
             if (currentState == MENU) {
-                if (SDL_PointInRect(&p, &menuButtonRectangle)) {
+                SDL_Rect menuBtn = ui.getMenuButtonRect(); // Buton yerini UI'dan istiyoruz
+                if (SDL_PointInRect(&p, &menuBtn)) {
                     score = 0;
                     timeRemaining = timeLimit;
                     gameStartTime = SDL_GetTicks();
-                    updateScoreText();
-                    updateTimerText();
+                    ui.updateScore(renderer, score);
+                    ui.updateTimer(renderer, timeRemaining);
                     currentState = PLAYING;
                 }
             }
@@ -131,13 +84,14 @@ void Game::handleEvents() {
                         }
                         
                         score += 10; 
-                        updateScoreText();
+                        ui.updateScore(renderer, score); // Skor yazısını ui güncelliyor
                     }
                 }
             }
             // DURUM 3: Oyun Bittiyse
             else if (currentState == GAMEOVER) {
-                if (SDL_PointInRect(&p, &gameOverRectangle)) {
+                SDL_Rect goBtn = ui.getGameOverRect(); // Buton yerini UI'dan istiyoruz
+                if (SDL_PointInRect(&p, &goBtn)) {
                     currentState = MENU;
                 }
             }
@@ -155,7 +109,7 @@ void Game::update() {
 
         if (newTimeRemaining != timeRemaining) {
             timeRemaining = newTimeRemaining;
-            updateTimerText(); 
+            ui.updateTimer(renderer, timeRemaining); // Süre yazısını ui güncelliyor
         }
 
         if (timeRemaining <= 0) {
@@ -184,7 +138,7 @@ void Game::render() {
     if (currentState == MENU) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, menuTextTexture, NULL, &menuButtonRectangle); // Menü metni
+        ui.renderMenu(renderer); // Menü arayüzünü ui çiziyor
     } 
     else if (currentState == PLAYING) {
         SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);
@@ -192,19 +146,13 @@ void Game::render() {
 
         for (int i = 0; i < 9; i++) moles[i].render(renderer); // Köstebekleri çizme
         
-        if (scoreTexture) SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreRectangle); // Skor yazısı
-        if (timerTexture) SDL_RenderCopy(renderer, timerTexture, NULL, &timerRectangle); // Süre yazısı
+        ui.renderPlaying(renderer); // Skor ve süre yazılarını ui çiziyor
     }
     else if (currentState == GAMEOVER) {
         SDL_SetRenderDrawColor(renderer, 100, 0, 0, 255);
         SDL_RenderClear(renderer);
         
-        if (scoreTexture) {
-            // Skoru Game Over yazısının üstüne çizme
-            SDL_Rect finalScoreRectangle = { (1280/2) - (scoreRectangle.w/2), (720/2) - 100, scoreRectangle.w, scoreRectangle.h };
-            SDL_RenderCopy(renderer, scoreTexture, NULL, &finalScoreRectangle);
-        }
-        SDL_RenderCopy(renderer, gameOverTextTexture, NULL, &gameOverRectangle); // Bitiş metni
+        ui.renderGameOver(renderer, score); // Oyun bitti ekranını ui çiziyor
     }
 
     SDL_RenderPresent(renderer); // Çizimleri ekrana yansıtma
@@ -212,19 +160,13 @@ void Game::render() {
 
 // Oyun kapatıldığında hafıza temizleme
 void Game::clean() {
-    SDL_DestroyTexture(menuTextTexture);
-    SDL_DestroyTexture(scoreTexture);
-    SDL_DestroyTexture(timerTexture);
-    SDL_DestroyTexture(gameOverTextTexture);
+    ui.clean(); // Arayüz hafızasını UIManager temizliyor
     
     // Ses dosyasını ve Mixer sistemini hafızadan temizleme
     if (hitSound != nullptr) {
         Mix_FreeChunk(hitSound);
     }
     Mix_CloseAudio();
-    
-    TTF_CloseFont(font);
-    TTF_Quit();
 
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);

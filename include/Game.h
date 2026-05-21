@@ -3,10 +3,10 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h> 
+#include <SDL2/SDL_mixer.h>
 #include <string>
 #include "Mole.h"
+#include "UIManager.h" // Arayüz yöneticisi dahil edildi
 
 enum GameState { MENU, PLAYING, GAMEOVER };
 
@@ -18,8 +18,6 @@ public:
     void render();
     void clean();
     bool running(); 
-    void updateScoreText();
-    void updateTimerText();
 
 private:
     bool isRunning = false; 
@@ -33,25 +31,16 @@ private:
     Uint32 spawnInterval = 800;   // Her 800 milisaniyede bir deneme yapılması için
     int score = 0; 
 
-    TTF_Font *font = nullptr;
-    SDL_Texture *scoreTexture = nullptr;
-    SDL_Rect scoreRectangle;
-
-    // Durum Makinesi ve Menü Elemanları
+    // Durum Makinesi Elemanları
     GameState currentState = MENU; 
-    SDL_Texture *menuTextTexture = nullptr;
-    SDL_Rect menuButtonRectangle;
+    
+    // Tüm yazıların yükünü devralacak nesne
+    UIManager ui; 
 
     // Süre ve Game Over Değişkenleri
     Uint32 gameStartTime = 0;      // Oyunun başladığı an
     int timeLimit = 60;            // Oyun süresi
     int timeRemaining = 60;        // Kalan süre
-    
-    SDL_Texture *timerTexture = nullptr;
-    SDL_Rect timerRectangle;       // Sayacın ekrandaki yeri
-    
-    SDL_Texture *gameOverTextTexture = nullptr;
-    SDL_Rect gameOverRectangle;    // Game over yazısının yeri
     
     // Ses efekti için kullanılacak pointer
     Mix_Chunk *hitSound = nullptr; 
