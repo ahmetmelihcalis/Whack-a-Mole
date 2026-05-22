@@ -9,6 +9,8 @@ public:
     void init(SDL_Renderer *renderer, int startX, int startY);
     void update();
     void render(SDL_Renderer *renderer);
+    
+    void clean(); 
 
     void popUp();
     void hide();

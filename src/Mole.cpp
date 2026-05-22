@@ -1,9 +1,14 @@
 #include "Mole.h"
+#include <iostream>
 
 void Mole::init(SDL_Renderer *renderer, int startX, int startY) {
     SDL_Surface *rawImage = IMG_Load("../assets/mole.png");
-    texture = SDL_CreateTextureFromSurface(renderer, rawImage);
-    SDL_FreeSurface(rawImage);
+    if (rawImage != nullptr) {
+        texture = SDL_CreateTextureFromSurface(renderer, rawImage);
+        SDL_FreeSurface(rawImage);
+    } else {
+        std::cout << "mole.png bulunamadi! Hata: " << IMG_GetError() << std::endl;
+    }
 
     moleRectangle.x = startX;
     moleRectangle.y = startY;
@@ -48,7 +53,15 @@ void Mole::update() {
 }
 
 void Mole::render(SDL_Renderer *renderer) {
-    if (isUp) {
+    if (isUp && texture != nullptr) {
         SDL_RenderCopy(renderer, texture, NULL, &moleRectangle);
+    }
+}
+
+// Hafızayı temizleme fonksiyonu
+void Mole::clean() {
+    if (texture != nullptr) {
+        SDL_DestroyTexture(texture);
+        texture = nullptr;
     }
 }

@@ -5,10 +5,11 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 #include <string>
+#include <vector> 
 #include "Mole.h"
-#include "UIManager.h" // Arayüz yöneticisi dahil edildi
+#include "UIManager.h" 
 
-enum GameState { MENU, PLAYING, GAMEOVER };
+enum GameState { MENU, PLAYING, GAMEOVER, HIGHSCORES };
 
 class Game {
 public:
@@ -20,10 +21,18 @@ public:
     bool running(); 
 
 private:
+    // Dosyadan skor yükleme ve kaydetme fonksiyonları
+    void loadHighScores();
+    void checkAndSaveHighScore(int currentScore);
+
     bool isRunning = false; 
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
     
+    // İki farklı arka plan için değişkenler
+    SDL_Texture *menuBgTexture = nullptr;
+    SDL_Texture *gameBgTexture = nullptr;
+
     Mole moles[9];
 
     // Oyun Motorunun Zamanlayıcı Değişkenleri
@@ -44,6 +53,9 @@ private:
     
     // Ses efekti için kullanılacak pointer
     Mix_Chunk *hitSound = nullptr; 
+
+    // En yüksek 5 skoru tutacak liste
+    std::vector<int> highScores;
 };
 
 #endif
