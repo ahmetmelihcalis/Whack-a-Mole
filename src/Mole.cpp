@@ -120,6 +120,7 @@ void Mole::update() {
 // Delik - köstebek - toprak katmanı sırası ile çizim
 void Mole::render(SDL_Renderer *renderer) {
     float progress = 1;
+
     // Animasyon başladığından beri geçen süre
     Uint32 passedTime = SDL_GetTicks() - stateStartTime;
     if (state == RISING) {
@@ -147,7 +148,7 @@ void Mole::render(SDL_Renderer *renderer) {
     SDL_Texture *activeTexture = isHit && whackedTexture != nullptr ? whackedTexture : texture;
     if (activeTexture == nullptr) return;
 
-    // Köstebeğin başlangıç ve tam görünür olduğu konumlar
+    // Köstebeğin başlangıç konumu
     const int hiddenY = holeRectangle.y + 80;
     const int visibleY = holeRectangle.y - 10;
     int moveDistance = hiddenY - visibleY;
@@ -158,6 +159,21 @@ void Mole::render(SDL_Renderer *renderer) {
         moleRectangle.w,
         moleRectangle.h
     };
+
+    // Vurulunca sarsılma efekti verme
+    if (isHit && passedTime < 90) {
+        int shake = 0;
+        if ((passedTime / 20) % 2 == 0) {
+            shake = -3;
+        } else {
+            shake = 3;
+        }
+
+        destination.x += shake;
+        destination.y += 2;
+        destination.w -= 4;
+        destination.h -= 4;
+    }
 
     // Alt gövdenin taşmaması için çizim alanını sınırlama
     SDL_Rect clipRectangle = {
@@ -172,7 +188,19 @@ void Mole::render(SDL_Renderer *renderer) {
     SDL_RenderSetClipRect(renderer, nullptr);
 
     if (holeFrontTexture != nullptr) {
-        SDL_RenderCopy(renderer, holeFrontTexture, nullptr, &holeRectangle);
+        SDL_Rect frontRectangle = holeRectangle;
+
+        if (state == RISING) {
+            if (progress < 0.35f) {
+                frontRectangle.y += 4;
+                frontRectangle.h -= 4;
+            } else if (progress < 0.7f) {
+                frontRectangle.y += 2;
+                frontRectangle.h -= 2;
+            }
+        }
+
+        SDL_RenderCopy(renderer, holeFrontTexture, nullptr, &frontRectangle);
     }
 }
 

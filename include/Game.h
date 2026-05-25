@@ -4,10 +4,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
-#include <string>
-#include <vector> 
+#include <vector>
 #include "Mole.h"
-#include "UIManager.h" 
+#include "UIManager.h"
 
 enum GameState { MENU, PLAYING, GAMEOVER, HIGHSCORES };
 
@@ -18,41 +17,37 @@ public:
     void update();
     void render();
     void clean();
-    bool running(); 
+    bool running();
 
 private:
     // Dosyadan skor yükleme ve kaydetme fonksiyonları
     void loadHighScores();
     void checkAndSaveHighScore(int currentScore);
 
-    bool isRunning = false; 
+    bool isRunning = false;
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
-    
+
     // İki farklı arka plan için değişkenler
     SDL_Texture *menuBgTexture = nullptr;
     SDL_Texture *gameBgTexture = nullptr;
 
     Mole moles[9];
+    UIManager ui;
 
-    // Oyun Motorunun Zamanlayıcı Değişkenleri
-    Uint32 lastSpawnTime = 0;     // Son köstebeğin çıktığı an
-    Uint32 spawnInterval = 800;   // Her 800 milisaniyede bir deneme yapılması için
-    int score = 0; 
+    // Oyun zamanlayıcı değişkenleri
+    Uint32 lastSpawnTime = 0;
+    Uint32 spawnInterval = 800;
+    Uint32 gameStartTime = 0;
 
-    // Durum Makinesi Elemanları
-    GameState currentState = MENU; 
-    
-    // Tüm yazıların yükünü devralacak nesne
-    UIManager ui; 
+    // Oyun durumu değişkenleri
+    GameState currentState = MENU;
+    int score = 0;
+    int timeLimit = 30;
+    int timeRemaining = 30;
 
-    // Süre ve Game Over Değişkenleri
-    Uint32 gameStartTime = 0;      // Oyunun başladığı an
-    int timeLimit = 60;            // Oyun süresi
-    int timeRemaining = 60;        // Kalan süre
-    
     // Ses efekti için kullanılacak pointer
-    Mix_Chunk *hitSound = nullptr; 
+    Mix_Chunk *hitSound = nullptr;
 
     // En yüksek 5 skoru tutacak liste
     std::vector<int> highScores;
