@@ -36,13 +36,13 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
 
     // Ses sistemini başlatma
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-        cout << "Ses sistemi baslatilamadi! Hata: " << Mix_GetError() << endl;
+        cout << "Failed to initialize audio. Error: " << Mix_GetError() << endl;
     }
 
     // Vuruş sesini hafızaya yükleme
     hitSound = Mix_LoadWAV("../assets/hit.wav");
     if (hitSound == nullptr) {
-        cout << "hit.wav dosyasi yuklenemedi! Hata: " << Mix_GetError() << endl;
+        cout << "Failed to load hit.wav. Error: " << Mix_GetError() << endl;
     }
 
     // Oyun açılırken kayıtlı en yüksek skorları dosyadan çekme

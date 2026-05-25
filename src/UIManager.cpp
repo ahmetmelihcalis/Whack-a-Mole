@@ -1,9 +1,10 @@
 #include "UIManager.h"
 #include <iostream>
+#include <string>
 
 using namespace std;
 
-// Yazılara otomatik gölge ekleyerek her arka planda okunmasını sağlama
+// Yazıların her arka planda okunmasını sağlama
 static void renderShadowed(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Rect *rect, Uint8 alpha = 255) {
     if (texture == nullptr) return;
 
@@ -70,13 +71,13 @@ static void renderButton(SDL_Renderer *renderer, SDL_Rect rect, SDL_Color fillCo
 // UI sistemini başlatma ve gerekli yazıları hazırlama
 bool UIManager::init(SDL_Renderer *renderer, const char *fontPath, int fontSize) {
     if (TTF_Init() == -1) {
-        cout << "TTF baslatilamadi! Hata: " << TTF_GetError() << endl;
+        cout << "Failed to initialize TTF. Error: " << TTF_GetError() << endl;
         return false;
     }
 
     font = TTF_OpenFont(fontPath, fontSize);
     if (font == nullptr) {
-        cout << "Font yuklenemedi! Hata: " << TTF_GetError() << endl;
+        cout << "Failed to load font. Error: " << TTF_GetError() << endl;
         return false;
     }
 
@@ -301,8 +302,7 @@ void UIManager::renderHighScores(SDL_Renderer *renderer) {
     SDL_GetMouseState(&mouseX, &mouseY);
     SDL_Point mousePoint = {mouseX, mouseY};
 
-    SDL_Rect drawRect = backButtonRect;
-    renderButton(renderer, drawRect, {18, 22, 18, 178}, {255, 235, 160, 190},
+    renderButton(renderer, backButtonRect, {18, 22, 18, 178}, {255, 235, 160, 190},
                  backButtonTexture, SDL_PointInRect(&mousePoint, &backButtonRect));
 }
 
