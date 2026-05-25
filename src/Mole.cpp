@@ -1,42 +1,98 @@
 #include "Mole.h"
+#include <algorithm>
 #include <iostream>
 
+// Köstebeğin texture'larını ve sahnedeki yerleşimini hazırlama
 void Mole::init(SDL_Renderer *renderer, int startX, int startY) {
-    SDL_Surface *rawImage = IMG_Load("../assets/mole.png");
-    if (rawImage != nullptr) {
-        texture = SDL_CreateTextureFromSurface(renderer, rawImage);
-        SDL_FreeSurface(rawImage);
+    const int holeWidth = 184;
+    const int holeHeight = 154;
+    const int holeOffsetX = -9;
+    const int holeOffsetY = 78;
+    const int moleHeight = 160;
+    const int moleOffsetY = -34;
+    int textureWidth = 0;
+    int textureHeight = 0;
+
+    SDL_Surface *surface = IMG_Load("../assets/mole.png");
+    if (surface != nullptr) {
+        textureWidth = surface->w;
+        textureHeight = surface->h;
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
     } else {
-        std::cout << "mole.png bulunamadi! Hata: " << IMG_GetError() << std::endl;
+        std::cout << "mole.png yuklenemedi! Hata: " << IMG_GetError() << std::endl;
     }
 
-    moleRectangle.x = startX;
-    moleRectangle.y = startY;
-    moleRectangle.w = 100;
-    moleRectangle.h = 100;
-    
-    isUp = false; 
+    surface = IMG_Load("../assets/whacked-mole.png");
+    if (surface != nullptr) {
+        whackedTexture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+    } else {
+        std::cout << "whacked-mole.png yuklenemedi! Hata: " << IMG_GetError() << std::endl;
+    }
+
+    surface = IMG_Load("../assets/hole.png");
+    if (surface != nullptr) {
+        holeTexture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+    } else {
+        std::cout << "hole.png yuklenemedi! Hata: " << IMG_GetError() << std::endl;
+    }
+
+    surface = IMG_Load("../assets/hole_front.png");
+    if (surface != nullptr) {
+        holeFrontTexture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+    }
+
+    holeRectangle = {startX + holeOffsetX, startY + holeOffsetY, holeWidth, holeHeight};
+
+    moleRectangle.h = moleHeight;
+    if (textureHeight > 0) {
+        moleRectangle.w = (textureWidth * moleRectangle.h) / textureHeight;
+    } else {
+        moleRectangle.w = 106;
+    }
+    moleRectangle.x = holeRectangle.x + (holeRectangle.w - moleRectangle.w) / 2;
+    moleRectangle.y = holeRectangle.y + moleOffsetY;
+
+    hitRectangle = {
+        moleRectangle.x + 4,
+        moleRectangle.y + 6,
+        moleRectangle.w - 8,
+        100
+    };
+
+    state = HIDDEN;
+    isHit = false;
+    stateStartTime = 0;
 }
 
 void Mole::popUp() {
-    if (!isUp) {
-        isUp = true;
-        popUpTime = SDL_GetTicks();
+    if (state == HIDDEN) {
+        state = RISING;
+        isHit = false;
+        stateStartTime = SDL_GetTicks();
     }
 }
 
+// Tıklandığında veya süresi dolduğunda düşüş animasyonuna geçirme
 void Mole::hide() {
-    isUp = false;
+    if (state != HIDDEN) {
+        state = FALLING;
+        stateStartTime = SDL_GetTicks();
+    }
 }
 
 bool Mole::isShowing() {
-    return isUp;
+    return state != HIDDEN;
 }
 
 bool Mole::handleInput(int mouseX, int mouseY) {
-    if (isUp) {
-        SDL_Point mousePoint = { mouseX, mouseY };
-        if (SDL_PointInRect(&mousePoint, &moleRectangle)) {
+    if (state == RISING || state == VISIBLE) {
+        SDL_Point mousePoint = {mouseX, mouseY};
+        if (SDL_PointInRect(&mousePoint, &hitRectangle)) {
+            isHit = true;
             hide();
             return true;
         }
@@ -45,23 +101,97 @@ bool Mole::handleInput(int mouseX, int mouseY) {
 }
 
 void Mole::update() {
-    if (isUp) {
-        if (SDL_GetTicks() - popUpTime > stayUpDuration) {
-            hide();
+    Uint32 now = SDL_GetTicks();
+    Uint32 elapsed = now - stateStartTime;
+
+    // Durumlar arası geçişi zamana göre yapma
+    if (state == RISING && elapsed >= riseDuration) {
+        state = VISIBLE;
+        stateStartTime = now;
+    } else if (state == VISIBLE && elapsed >= stayUpDuration) {
+        isHit = false;
+        state = FALLING;
+        stateStartTime = now;
+    } else if (state == FALLING && elapsed >= fallDuration) {
+        state = HIDDEN;
+    }
+}
+
+// Delik - köstebek - toprak katmanı sırası ile çizim
+void Mole::render(SDL_Renderer *renderer) {
+    float progress = 1;
+    // Animasyon başladığından beri geçen süre
+    Uint32 passedTime = SDL_GetTicks() - stateStartTime;
+    if (state == RISING) {
+        progress = (float)passedTime / riseDuration;
+        if (progress > 1) {
+            progress = 1;
+        }
+    } else if (state == FALLING) {
+        progress = 1 - (float)passedTime / fallDuration;
+        if (progress < 0) {
+            progress = 0;
         }
     }
-}
 
-void Mole::render(SDL_Renderer *renderer) {
-    if (isUp && texture != nullptr) {
-        SDL_RenderCopy(renderer, texture, NULL, &moleRectangle);
+    if (holeTexture != nullptr) {
+        SDL_RenderCopy(renderer, holeTexture, nullptr, &holeRectangle);
+    } else {
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(renderer, 38, 24, 18, 220);
+        SDL_RenderFillRect(renderer, &holeRectangle);
+    }
+
+    if (state == HIDDEN) return;
+
+    SDL_Texture *activeTexture = isHit && whackedTexture != nullptr ? whackedTexture : texture;
+    if (activeTexture == nullptr) return;
+
+    // Köstebeğin başlangıç ve tam görünür olduğu konumlar
+    const int hiddenY = holeRectangle.y + 80;
+    const int visibleY = holeRectangle.y - 10;
+    int moveDistance = hiddenY - visibleY;
+    int currentY = hiddenY - (int)(moveDistance * progress);
+    SDL_Rect destination = {
+        moleRectangle.x,
+        currentY,
+        moleRectangle.w,
+        moleRectangle.h
+    };
+
+    // Alt gövdenin taşmaması için çizim alanını sınırlama
+    SDL_Rect clipRectangle = {
+        holeRectangle.x - 8,
+        holeRectangle.y - 96,
+        holeRectangle.w + 16,
+        182
+    };
+
+    SDL_RenderSetClipRect(renderer, &clipRectangle);
+    SDL_RenderCopy(renderer, activeTexture, nullptr, &destination);
+    SDL_RenderSetClipRect(renderer, nullptr);
+
+    if (holeFrontTexture != nullptr) {
+        SDL_RenderCopy(renderer, holeFrontTexture, nullptr, &holeRectangle);
     }
 }
 
-// Hafızayı temizleme fonksiyonu
+// Texture hafızalarını temizleme
 void Mole::clean() {
     if (texture != nullptr) {
         SDL_DestroyTexture(texture);
         texture = nullptr;
+    }
+    if (whackedTexture != nullptr) {
+        SDL_DestroyTexture(whackedTexture);
+        whackedTexture = nullptr;
+    }
+    if (holeTexture != nullptr) {
+        SDL_DestroyTexture(holeTexture);
+        holeTexture = nullptr;
+    }
+    if (holeFrontTexture != nullptr) {
+        SDL_DestroyTexture(holeFrontTexture);
+        holeFrontTexture = nullptr;
     }
 }

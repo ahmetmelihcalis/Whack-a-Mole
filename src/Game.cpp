@@ -50,13 +50,14 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
         ui.updateTimer(renderer, timeRemaining);
 
         // 3x3 Izgara
-        int startX = 415;  
-        int startY = 135;  
-        int spacing = 150; 
+        int startX = 340;
+        int startY = 45;
+        int spacingX = 190;
+        int spacingY = 165;
         for (int i = 0; i < 9; i++) {
             int row = i / 3;
             int col = i % 3; 
-            moles[i].init(renderer, startX + (col * spacing), startY + (row * spacing));
+            moles[i].init(renderer, startX + (col * spacingX), startY + (row * spacingY));
         }
 
         srand(static_cast<unsigned int>(time(nullptr))); // Rastgele sayı üretecini başlatma

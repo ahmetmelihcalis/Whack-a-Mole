@@ -15,14 +15,14 @@ public:
     void updateScore(SDL_Renderer *renderer, int score);
     void updateTimer(SDL_Renderer *renderer, int timeRemaining);
 
-    // Oyun bittiğinde en yüksek 5 skoru ekrana çizilmek üzere hazırlar
+    // Oyun bittiğinde en yüksek 5 skoru ekrana çizilmek üzere hazırlama
     void prepareLeaderboard(SDL_Renderer *renderer, int finalScore, const std::vector<int>& topScores);
 
     // Çizim fonksiyonları
     void renderMenu(SDL_Renderer *renderer);
     void renderPlaying(SDL_Renderer *renderer);
     void renderGameOver(SDL_Renderer *renderer); 
-    void renderHighScores(SDL_Renderer *renderer); // Skor ekranını çizer
+    void renderHighScores(SDL_Renderer *renderer); // Skor ekranını çizme
 
     // Hafıza temizleme
     void clean();
@@ -59,7 +59,9 @@ private:
     SDL_Rect gameOverRectangle;
 
     // En yüksek 5 skorun ekrandaki resimleri ve yerleri
-    SDL_Texture *highScoreTextures[5] = { nullptr };
+    SDL_Texture *highScoreTextures[5] = { 
+        nullptr 
+    };
     SDL_Rect highScoreRectangles[5];
     SDL_Texture *leaderBoardTitleTexture = nullptr;
     SDL_Rect leaderBoardTitleRectangle;
