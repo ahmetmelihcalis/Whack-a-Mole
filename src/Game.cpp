@@ -157,6 +157,17 @@ void Game::handleEvents() {
 
         // DURUM 3: Oyun Oynanıyorsa
         else if (currentState == PLAYING) {
+            SDL_Rect backIconRectangle = ui.getBackIconRectangle();
+            SDL_Rect buttonPanel = {backIconRectangle.x - 12, backIconRectangle.y - 12, backIconRectangle.w + 24, backIconRectangle.h + 24};
+            
+            if (SDL_PointInRect(&p, &buttonPanel)) {
+                currentState = MENU;
+                for (int i = 0; i < 9; i++) {
+                    moles[i].hide();
+                }
+                continue;
+            }
+
             for (int i = 0; i < 9; i++) {
                 if (moles[i].checkClick(mx, my)) {
                     // Köstebeğe başarıyla vurulduğunda sesi çalma

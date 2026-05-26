@@ -157,6 +157,10 @@ bool UIManager::init(SDL_Renderer *renderer, const char *fontPath, int fontSize)
     backButtonRectangle = {(1280 / 2) - 170, 524, 340, 66};
     backButtonTexture = createTextTexture(renderer, font, "BACK TO MENU", white);
 
+    backIconTexture = createTextTexture(renderer, font, "<-", white, &backIconRectangle);
+    backIconRectangle.x = 40;
+    backIconRectangle.y = 30;
+
     resultsTitleTexture = createTextTexture(renderer, font, "ROUND RESULTS", yellow, &resultsTitleRectangle);
     resultsTitleRectangle.x = (1280 / 2) - (resultsTitleRectangle.w / 2);
     resultsTitleRectangle.y = 138;
@@ -169,7 +173,7 @@ bool UIManager::init(SDL_Renderer *renderer, const char *fontPath, int fontSize)
 
     scoreRectangle.x = 1000;
     scoreRectangle.y = 30;
-    timerRectangle.x = 50;
+    timerRectangle.x = 150;
     timerRectangle.y = 30;
 
     return true;
@@ -195,7 +199,7 @@ void UIManager::updateTimer(SDL_Renderer *renderer, int timeRemaining) {
     }
 
     timerTexture = createTextTexture(renderer, font, "Time: " + to_string(timeRemaining), timerColor, &timerRectangle);
-    timerRectangle.x = 50;
+    timerRectangle.x = 150;
     timerRectangle.y = 30;
 }
 
@@ -295,6 +299,26 @@ void UIManager::renderPlaying(SDL_Renderer *renderer) {
     }
     if (timerTexture != nullptr) {
         drawShadowText(renderer, timerTexture, &timerRectangle);
+    }
+
+    if (backIconTexture != nullptr) {
+        int mouseX = 0;
+        int mouseY = 0;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        SDL_Point mousePoint = {mouseX, mouseY};
+        
+        SDL_Rect buttonPanel = {backIconRectangle.x - 12, backIconRectangle.y - 12, backIconRectangle.w + 24, backIconRectangle.h + 24};
+        bool isHovered = SDL_PointInRect(&mousePoint, &buttonPanel);
+        
+        if (isHovered) {
+            buttonPanel.x -= 2;
+            buttonPanel.y -= 2;
+            buttonPanel.w += 4;
+            buttonPanel.h += 4;
+        }
+        
+        drawPanel(renderer, buttonPanel, {14, 18, 18, 150}, {255, 255, 255, 100});
+        drawShadowText(renderer, backIconTexture, &backIconRectangle);
     }
 }
 
@@ -449,6 +473,7 @@ void UIManager::clean() {
     leaderboardButtonTexture = safeDestroyTexture(leaderboardButtonTexture);
     exitButtonTexture = safeDestroyTexture(exitButtonTexture);
     backButtonTexture = safeDestroyTexture(backButtonTexture);
+    backIconTexture = safeDestroyTexture(backIconTexture);
     scoreTexture = safeDestroyTexture(scoreTexture);
     timerTexture = safeDestroyTexture(timerTexture);
     gameOverTextTexture = safeDestroyTexture(gameOverTextTexture);

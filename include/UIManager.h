@@ -57,6 +57,10 @@ public:
         return backButtonRectangle;
     }
 
+    SDL_Rect getBackIconRectangle() {
+        return backIconRectangle;
+    }
+
     SDL_Rect getGameOverRectangle() {
         return gameOverRectangle;
     }
@@ -86,6 +90,10 @@ private:
     // Geri dönüş butonu
     SDL_Texture *backButtonTexture = nullptr;
     SDL_Rect backButtonRectangle;
+
+    // Oyun içi sol üst çıkış ikonu
+    SDL_Texture *backIconTexture = nullptr;
+    SDL_Rect backIconRectangle;
 
     SDL_Texture *gameOverTextTexture = nullptr;
     SDL_Rect gameOverRectangle;

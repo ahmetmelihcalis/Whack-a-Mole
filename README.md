@@ -44,6 +44,46 @@ Oyuncu, deliklerden rastgele çıkan köstebeklere fare ile tıklayarak puan top
 
 ---
 
+## Kurulum ve Derleme Rehberi
+
+Proje, **CMake** kullanılarak derlenmek üzere yapılandırılmıştır. Kodu derlemeden önce sisteminizde `C++ Derleyici (GCC/MinGW)`, `CMake` (minimum sürüm 3.16) ve `SDL2` kütüphanelerinin (SDL2, SDL2_image, SDL2_ttf, SDL2_mixer) kurulu olması gerekmektedir.
+
+> **ÖNEMLİ NOT:** Projeyi CMake ile yapılandırmadan önce `build` adında bir derleme dizini oluşturmayı unutmayınız.
+
+### Derleme Adımları (Terminal / Komut Satırı)
+
+1. Proje klasörüne gidin:
+```bash
+cd Whack-a-Mole
+```
+
+2. Derleme dizini oluşturun ve içine girin:
+```bash
+mkdir build
+cd build
+```
+
+3. CMake ile projeyi yapılandırın:
+```bash
+cmake ..
+```
+
+4. Projeyi derleyin:
+```bash
+cmake --build .
+```
+
+5. Oyunu çalıştırın:
+```bash
+# Windows (MSYS2/MinGW) için:
+./WhackAMole.exe
+
+# Linux/macOS için:
+./WhackAMole
+```
+
+---
+
 ## Proje Yapısı
 
 ```text
