@@ -3,12 +3,12 @@
 
 // Köstebeğin texture'larını ve sahnedeki yerleşimini hazırlama
 void Mole::init(SDL_Renderer *renderer, int startX, int startY) {
-    const int holeWidth = 184;
-    const int holeHeight = 154;
-    const int holeOffsetX = -9;
-    const int holeOffsetY = 78;
-    const int moleHeight = 160;
-    const int moleOffsetY = -34;
+    int holeWidth = 184;
+    int holeHeight = 154;
+    int holeOffsetX = -9;
+    int holeOffsetY = 78;
+    int moleHeight = 160;
+    int moleOffsetY = -34;
     int textureWidth = 0;
     int textureHeight = 0;
 
@@ -83,11 +83,11 @@ void Mole::hide() {
     }
 }
 
-bool Mole::isShowing() {
+bool Mole::isVisible() {
     return state != HIDDEN;
 }
 
-bool Mole::handleInput(int mouseX, int mouseY) {
+bool Mole::checkClick(int mouseX, int mouseY) {
     if (state == RISING || state == VISIBLE) {
         SDL_Point mousePoint = {mouseX, mouseY};
         if (SDL_PointInRect(&mousePoint, &hitRectangle)) {
@@ -148,8 +148,8 @@ void Mole::render(SDL_Renderer *renderer) {
     if (activeTexture == nullptr) return;
 
     // Köstebeğin başlangıç konumu
-    const int hiddenY = holeRectangle.y + 80;
-    const int visibleY = holeRectangle.y - 10;
+    int hiddenY = holeRectangle.y + 80;
+    int visibleY = holeRectangle.y - 10;
     int moveDistance = hiddenY - visibleY;
     int currentY = hiddenY - (int)(moveDistance * progress);
     SDL_Rect destination = {

@@ -6,6 +6,13 @@
 #include <SDL2/SDL_ttf.h>
 #include <vector> // Skor listesi için eklendi
 
+struct Effect {
+    bool active = false;
+    int x = 0;
+    int y = 0;
+    Uint32 startTime = 0;
+};
+
 class UIManager {
 public:
     // UI sistemini başlatma ve fontu yükleme
@@ -16,7 +23,7 @@ public:
     void updateTimer(SDL_Renderer *renderer, int timeRemaining);
 
     // Oyun bittiğinde en yüksek 5 skoru ekrana çizilmek üzere hazırlama
-    void prepareLeaderboard(SDL_Renderer *renderer, int finalScore, const std::vector<int>& topScores);
+    void updateLeaderboard(SDL_Renderer *renderer, int finalScore, std::vector<int> topScores);
 
     // Çizim fonksiyonları
     void renderMenu(SDL_Renderer *renderer);
@@ -26,36 +33,36 @@ public:
     void renderEffects(SDL_Renderer *renderer);
 
     // Kısa süreli vuruş efektini yönetme
-    void addHitEffect(int x, int y);
-    void updateEffects();
-    void clearEffects();
+    void showHitEffect(int x, int y);
+    void updateHitEffects();
+    void clearHitEffects();
 
     // Hafıza temizleme
     void clean();
 
     // Buton koordinatlarını dışarıya açan fonksiyonlar
-    SDL_Rect getPlayButtonRect() const { return playButtonRect; }
-    SDL_Rect getLeaderboardButtonRect() const { return leaderboardButtonRect; }
-    SDL_Rect getExitButtonRect() const { return exitButtonRect; }
-    SDL_Rect getBackButtonRect() const { return backButtonRect; }
-    SDL_Rect getGameOverRect() const { return gameOverRectangle; }
+    SDL_Rect getPlayButtonRectangle() {
+        return playButtonRectangle;
+    }
+
+    SDL_Rect getLeaderboardButtonRectangle() {
+        return leaderboardButtonRectangle;
+    }
+
+    SDL_Rect getExitButtonRectangle() {
+        return exitButtonRectangle;
+    }
+
+    SDL_Rect getBackButtonRectangle() {
+        return backButtonRectangle;
+    }
+
+    SDL_Rect getGameOverRectangle() {
+        return gameOverRectangle;
+    }
 
 private:
-    void renderLeaderboardRows(SDL_Renderer *renderer, int startX, int startY, int panelWidth);
-
-    struct FloatingTextEffect {
-        bool active = false;
-        int x = 0;
-        int y = 0;
-        Uint32 startTime = 0;
-    };
-
-    struct HitSparkEffect {
-        bool active = false;
-        int x = 0;
-        int y = 0;
-        Uint32 startTime = 0;
-    };
+    void drawLeaderboardRows(SDL_Renderer *renderer, int startX, int startY, int panelWidth);
 
     TTF_Font *font = nullptr;
 
@@ -66,19 +73,19 @@ private:
     SDL_Rect timerRectangle;
 
     SDL_Texture *mainTitleTexture = nullptr;
-    SDL_Rect mainTitleRect;
+    SDL_Rect mainTitleRectangle;
 
     // Ana menü butonları
     SDL_Texture *playButtonTexture = nullptr;
-    SDL_Rect playButtonRect;
+    SDL_Rect playButtonRectangle;
     SDL_Texture *leaderboardButtonTexture = nullptr;
-    SDL_Rect leaderboardButtonRect;
+    SDL_Rect leaderboardButtonRectangle;
     SDL_Texture *exitButtonTexture = nullptr;
-    SDL_Rect exitButtonRect;
+    SDL_Rect exitButtonRectangle;
 
     // Geri dönüş butonu
     SDL_Texture *backButtonTexture = nullptr;
-    SDL_Rect backButtonRect;
+    SDL_Rect backButtonRectangle;
 
     SDL_Texture *gameOverTextTexture = nullptr;
     SDL_Rect gameOverRectangle;
@@ -92,10 +99,10 @@ private:
     SDL_Rect leaderBoardTitleRectangle;
 
     SDL_Texture *floatingScoreTexture = nullptr;
-    SDL_Rect floatingScoreRect;
+    SDL_Rect floatingScoreRectangle;
 
-    FloatingTextEffect floatingTexts[6];
-    HitSparkEffect hitSparks[6];
+    Effect floatingTexts[6];
+    Effect hitSparks[6];
 
     int scorePulseAmount = 0;
     int currentTimeRemaining = 30;

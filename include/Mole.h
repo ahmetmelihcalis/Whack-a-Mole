@@ -14,8 +14,8 @@ public:
 
     void popUp();
     void hide();
-    bool isShowing();
-    bool handleInput(int mouseX, int mouseY);
+    bool isVisible();
+    bool checkClick(int mouseX, int mouseY);
 
 private:
     // Köstebeğin ekrandaki animasyon durumları
@@ -42,9 +42,9 @@ private:
     Uint32 stateStartTime;
 
     // Animasyon süreleri
-    const Uint32 riseDuration = 180;
-    const Uint32 stayUpDuration = 850;
-    const Uint32 fallDuration = 180;
+    Uint32 riseDuration = 180;
+    Uint32 stayUpDuration = 850;
+    Uint32 fallDuration = 180;
 };
 
 #endif

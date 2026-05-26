@@ -22,15 +22,15 @@ public:
 private:
     // Dosyadan skor yükleme ve kaydetme fonksiyonları
     void loadHighScores();
-    void checkAndSaveHighScore(int currentScore);
+    void saveHighScore(int currentScore);
 
     bool isRunning = false;
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
 
     // İki farklı arka plan için değişkenler
-    SDL_Texture *menuBgTexture = nullptr;
-    SDL_Texture *gameBgTexture = nullptr;
+    SDL_Texture *menuBackgroundTexture = nullptr;
+    SDL_Texture *gameBackgroundTexture = nullptr;
 
     Mole moles[9];
     UIManager ui;
@@ -39,12 +39,12 @@ private:
     Uint32 lastSpawnTime = 0;
     Uint32 spawnInterval = 800;
     Uint32 gameStartTime = 0;
+    int timeLimit = 30;
+    int timeRemaining = 30;
 
     // Oyun durumu değişkenleri
     GameState currentState = MENU;
     int score = 0;
-    int timeLimit = 30;
-    int timeRemaining = 30;
 
     // Ses efekti için kullanılacak pointer
     Mix_Chunk *hitSound = nullptr;

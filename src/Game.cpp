@@ -9,15 +9,15 @@ using namespace std;
 
 void Game::init(const char *title, int xposition, int yposition, int width, int height, bool fullscreen) {
     int flags = 0;
-    if (fullscreen) flags = SDL_WINDOW_FULLSCREEN; // Tam ekran kontrolü
+    if (fullscreen) flags = SDL_WINDOW_FULLSCREEN;
 
-    // SDL'i başlatma ve pencereyi oluşturma
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         isRunning = false;
         return;
     }
 
-    // Resimleri küçültüp büyütürken kaliteyi artırma
+    IMG_Init(IMG_INIT_PNG);
+
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
     window = SDL_CreateWindow(title, xposition, yposition, width, height, flags);
@@ -27,11 +27,11 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
     ui.init(renderer, "../assets/PixelOperator8-Bold.ttf", 26);
 
     SDL_Surface *surface = IMG_Load("../assets/menu_bg.png");
-    menuBgTexture = SDL_CreateTextureFromSurface(renderer, surface);
+    menuBackgroundTexture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 
     surface = IMG_Load("../assets/game_bg.png");
-    gameBgTexture = SDL_CreateTextureFromSurface(renderer, surface);
+    gameBackgroundTexture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 
     // Ses sistemini başlatma
@@ -64,8 +64,8 @@ void Game::init(const char *title, int xposition, int yposition, int width, int 
         moles[i].init(renderer, startX + (col * spacingX), startY + (row * spacingY));
     }
 
-    srand(static_cast<unsigned int>(time(nullptr))); // Rastgele sayı üretecini başlatma
-    isRunning = true; // Oyun döngüsünü aktif etme
+    srand((unsigned int)time(nullptr));
+    isRunning = true;
 }
 
 // txt dosyasından skorları okuma
@@ -81,7 +81,7 @@ void Game::loadHighScores() {
 
     file.close();
 
-    while (highScores.size() < 5) {
+    for (int i = highScores.size(); i < 5; i++) {
         highScores.push_back(0);
     }
 
@@ -90,7 +90,7 @@ void Game::loadHighScores() {
 }
 
 // Yeni yapılan skoru listeye ekleme, sıralama ve dosyaya kaydetme
-void Game::checkAndSaveHighScore(int currentScore) {
+void Game::saveHighScore(int currentScore) {
     highScores.push_back(currentScore);
 
     // Büyükten küçüğe sıralama
@@ -127,30 +127,30 @@ void Game::handleEvents() {
 
         // DURUM 1: Ana Menü
         if (currentState == MENU) {
-            SDL_Rect playBtn = ui.getPlayButtonRect();
-            SDL_Rect lbBtn = ui.getLeaderboardButtonRect();
-            SDL_Rect exitBtn = ui.getExitButtonRect();
+            SDL_Rect playButtonRectangle = ui.getPlayButtonRectangle();
+            SDL_Rect leaderboardButtonRectangle = ui.getLeaderboardButtonRectangle();
+            SDL_Rect exitButtonRectangle = ui.getExitButtonRectangle();
 
-            if (SDL_PointInRect(&p, &playBtn)) {
+            if (SDL_PointInRect(&p, &playButtonRectangle)) {
                 score = 0;
                 timeRemaining = timeLimit;
                 gameStartTime = SDL_GetTicks();
-                ui.clearEffects();
+                ui.clearHitEffects();
                 ui.updateScore(renderer, score);
                 ui.updateTimer(renderer, timeRemaining);
                 currentState = PLAYING;
-            } else if (SDL_PointInRect(&p, &lbBtn)) {
-                ui.prepareLeaderboard(renderer, 0, highScores);
+            } else if (SDL_PointInRect(&p, &leaderboardButtonRectangle)) {
+                ui.updateLeaderboard(renderer, 0, highScores);
                 currentState = HIGHSCORES;
-            } else if (SDL_PointInRect(&p, &exitBtn)) {
+            } else if (SDL_PointInRect(&p, &exitButtonRectangle)) {
                 isRunning = false;
             }
         }
 
         // DURUM 2: Skor Tablosu
         else if (currentState == HIGHSCORES) {
-            SDL_Rect backBtn = ui.getBackButtonRect();
-            if (SDL_PointInRect(&p, &backBtn)) {
+            SDL_Rect backButtonRectangle = ui.getBackButtonRectangle();
+            if (SDL_PointInRect(&p, &backButtonRectangle)) {
                 currentState = MENU;
             }
         }
@@ -158,25 +158,25 @@ void Game::handleEvents() {
         // DURUM 3: Oyun Oynanıyorsa
         else if (currentState == PLAYING) {
             for (int i = 0; i < 9; i++) {
-                if (moles[i].handleInput(mx, my)) {
+                if (moles[i].checkClick(mx, my)) {
                     // Köstebeğe başarıyla vurulduğunda sesi çalma
                     if (hitSound != nullptr) {
                         Mix_PlayChannel(-1, hitSound, 0);
                     }
 
                     score += 10;
-                    ui.addHitEffect(mx, my);
-                    ui.updateScore(renderer, score); // Skor yazısını ui güncelliyor
+                    ui.showHitEffect(mx, my);
+                    ui.updateScore(renderer, score);
                 }
             }
         }
 
         // DURUM 4: Oyun Bittiyse
         else if (currentState == GAMEOVER) {
-            SDL_Rect goBtn = ui.getGameOverRect();
-            SDL_Rect backBtn = ui.getBackButtonRect();
+            SDL_Rect gameOverRectangle = ui.getGameOverRectangle();
+            SDL_Rect backButtonRectangle = ui.getBackButtonRectangle();
 
-            if (SDL_PointInRect(&p, &goBtn) || SDL_PointInRect(&p, &backBtn)) {
+            if (SDL_PointInRect(&p, &gameOverRectangle) || SDL_PointInRect(&p, &backButtonRectangle)) {
                 currentState = MENU;
             }
         }
@@ -193,15 +193,15 @@ void Game::update() {
 
     if (newTimeRemaining != timeRemaining) {
         timeRemaining = newTimeRemaining;
-        ui.updateTimer(renderer, timeRemaining); // Süre yazısını ui güncelliyor
+        ui.updateTimer(renderer, timeRemaining);
     }
 
     if (timeRemaining <= 0) {
         currentState = GAMEOVER;
 
         // Skorları kontrol etme, kaydetme ve ekrana çizilmesi için UI'ı hazırlama
-        checkAndSaveHighScore(score);
-        ui.prepareLeaderboard(renderer, score, highScores);
+        saveHighScore(score);
+        ui.updateLeaderboard(renderer, score, highScores);
 
         for (int i = 0; i < 9; i++) {
             moles[i].hide();
@@ -212,11 +212,11 @@ void Game::update() {
         moles[i].update();
     }
 
-    ui.updateEffects();
+    ui.updateHitEffects();
 
     if (SDL_GetTicks() - lastSpawnTime > spawnInterval) {
         int randomIndex = rand() % 9;
-        if (!moles[randomIndex].isShowing()) {
+        if (!moles[randomIndex].isVisible()) {
             moles[randomIndex].popUp();
         }
         lastSpawnTime = SDL_GetTicks();
@@ -230,8 +230,8 @@ void Game::render() {
         SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);
         SDL_RenderClear(renderer);
 
-        if (menuBgTexture != nullptr) {
-            SDL_RenderCopy(renderer, menuBgTexture, NULL, NULL);
+        if (menuBackgroundTexture != nullptr) {
+            SDL_RenderCopy(renderer, menuBackgroundTexture, NULL, NULL);
         }
 
         if (currentState == MENU) {
@@ -244,34 +244,34 @@ void Game::render() {
         SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);
         SDL_RenderClear(renderer);
 
-        if (gameBgTexture != nullptr) {
-            SDL_RenderCopy(renderer, gameBgTexture, NULL, NULL);
+        if (gameBackgroundTexture != nullptr) {
+            SDL_RenderCopy(renderer, gameBackgroundTexture, NULL, NULL);
         }
 
         for (int i = 0; i < 9; i++) {
             moles[i].render(renderer);
         }
 
-        ui.renderPlaying(renderer); // Skor ve süre yazılarını ui çiziyor
+        ui.renderPlaying(renderer);
         ui.renderEffects(renderer);
     } else if (currentState == GAMEOVER) {
         // DURUM 3: Oyun Bitişi
         SDL_SetRenderDrawColor(renderer, 50, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        if (menuBgTexture != nullptr) {
-            SDL_RenderCopy(renderer, menuBgTexture, NULL, NULL);
+        if (menuBackgroundTexture != nullptr) {
+            SDL_RenderCopy(renderer, menuBackgroundTexture, NULL, NULL);
         }
 
-        ui.renderGameOver(renderer); // Oyun bitti ekranını ui çiziyor
+        ui.renderGameOver(renderer);
     }
 
-    SDL_RenderPresent(renderer); // Çizimleri ekrana yansıtma
+    SDL_RenderPresent(renderer);
 }
 
 // Oyun kapatıldığında hafıza temizleme
 void Game::clean() {
-    ui.clean(); // Arayüz hafızasını UIManager temizliyor
+    ui.clean();
 
     for (int i = 0; i < 9; i++) {
         moles[i].clean();
@@ -284,11 +284,11 @@ void Game::clean() {
     Mix_CloseAudio();
 
     // Arkaplan hafızasını temizleme
-    if (menuBgTexture != nullptr) {
-        SDL_DestroyTexture(menuBgTexture);
+    if (menuBackgroundTexture != nullptr) {
+        SDL_DestroyTexture(menuBackgroundTexture);
     }
-    if (gameBgTexture != nullptr) {
-        SDL_DestroyTexture(gameBgTexture);
+    if (gameBackgroundTexture != nullptr) {
+        SDL_DestroyTexture(gameBackgroundTexture);
     }
 
     SDL_DestroyWindow(window);
