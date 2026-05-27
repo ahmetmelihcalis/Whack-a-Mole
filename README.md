@@ -154,16 +154,23 @@ flowchart TD
 
 ![Yüksek Skorlar Ekranı](docs/screenshots/high-score.png)
 
+## Proje Demo Videosu
+
+Oyunun temel özelliklerini ve genel işleyişini görmek için aşağıdaki videoyu izleyebilirsiniz:
+
+https://github.com/user-attachments/assets/f02d2488-d5d2-47e6-889e-c248b5a948e3
+
 ## Kurulum ve Derleme Rehberi
 
 Proje, **CMake** kullanılarak derlenmek üzere yapılandırılmıştır. Kodu derlemeden önce sisteminizde `C++ Derleyici (GCC/MinGW)`, `CMake` (minimum sürüm 3.16) ve `SDL2` kütüphanelerinin (SDL2, SDL2_image, SDL2_ttf, SDL2_mixer) kurulu olması gerekmektedir.
 
 > **ÖNEMLİ NOT:** Projeyi CMake ile yapılandırmadan önce `build` adında bir derleme dizini oluşturmayı unutmayınız.
 
-### Derleme Adımları (Terminal / Komut Satırı)
+### Çalıştırma Adımları (Terminal / Komut Satırı)
 
-1. Proje klasörüne gidin:
+1. Repoyu klonlayın ve proje klasörüne gidin:
 ```bash
+git clone https://github.com/ahmetmelihcalis/Whack-a-Mole.git
 cd Whack-a-Mole
 ```
 
