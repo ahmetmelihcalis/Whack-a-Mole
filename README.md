@@ -40,18 +40,19 @@ Oyuncu, deliklerden rastgele çıkan köstebeklere fare ile tıklayarak puan top
 
 ```text
 Whack-a-Mole/
-├── assets/
-├── include/
+├── assets/              # Oyun görselleri, ses dosyaları ve fontlar
+├── docs/                # README için ekran görüntüleri ve dokümantasyon görselleri
+├── include/             # Header dosyaları
 │   ├── Game.h
 │   ├── Mole.h
 │   └── UIManager.h
-├── src/
+├── src/                 # Kaynak kod dosyaları
 │   ├── Game.cpp
 │   ├── Mole.cpp
 │   ├── UIManager.cpp
 │   └── main.cpp
-├── CMakeLists.txt
-└── README.md
+├── CMakeLists.txt       # CMake derleme yapılandırması
+└── README.md            # Proje açıklaması ve kullanım bilgileri
 ```
 
 ## Yazılım ve Fonksiyon Mimarisi
@@ -122,6 +123,8 @@ classDiagram
 
 ### Oyun Akış Diyagramı
 
+---
+
 ```mermaid
 flowchart TD
     A[Program Başlar] --> B["Başlatma - init()"]
@@ -133,8 +136,6 @@ flowchart TD
     G --> C
     C -->|Hayır| H["Temizle ve Çıkış - clean()"]
 ```
-
-
 
 ## Oyun Görselleri
 
@@ -199,6 +200,6 @@ cmake --build .
 ./WhackAMole
 ```
 
-## Amaç
+## Notlar
 
-Bu projenin amacı, Programlama II dersi kapsamında C++ programlama dili ile nesne yönelimli programlama mantığını kullanarak SDL2 tabanlı etkileşimli bir oyun geliştirmektir.
+ Projenin geliştirme süreci, yazılım mimarisi, kullanılan algoritmalar ve diğer detaylar proje raporunda daha kapsamlı şekilde açıklanmıştır.
