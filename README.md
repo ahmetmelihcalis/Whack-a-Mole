@@ -167,6 +167,14 @@ Proje, **CMake** kullanılarak derlenmek üzere yapılandırılmıştır. Kodu d
 
 > **ÖNEMLİ NOT:** Projeyi CMake ile yapılandırmadan önce `build` adında bir derleme dizini oluşturmayı unutmayınız.
 
+### Windows / MSYS2 Bağımlılık Kurulumu
+
+Windows üzerinde MSYS2 UCRT64 ortamı kullanıyorsanız gerekli derleyici, CMake ve SDL2 kütüphanelerini aşağıdaki komutla kurabilirsiniz:
+
+```bash
+pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-SDL2_image mingw-w64-ucrt-x86_64-SDL2_ttf mingw-w64-ucrt-x86_64-SDL2_mixer
+```
+
 ### Çalıştırma Adımları (Terminal / Komut Satırı)
 
 1. Repoyu klonlayın ve proje klasörüne gidin:
@@ -182,6 +190,11 @@ cd build
 ```
 
 3. CMake ile projeyi yapılandırın:
+```bash
+cmake -G "MinGW Makefiles" ..
+```
+
+Farklı bir CMake oluşturucusu kullanıyorsanız aşağıdaki komut da tercih edilebilir:
 ```bash
 cmake ..
 ```
@@ -200,6 +213,6 @@ cmake --build .
 ./WhackAMole
 ```
 
-## Notlar
+## Not
 
  Projenin geliştirme süreci, yazılım mimarisi, kullanılan algoritmalar ve diğer detaylar proje raporunda daha kapsamlı şekilde açıklanmıştır.
