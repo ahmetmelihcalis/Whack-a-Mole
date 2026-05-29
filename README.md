@@ -41,7 +41,7 @@ Oyuncu, deliklerden rastgele çıkan köstebeklere fare ile tıklayarak puan top
 ```text
 Whack-a-Mole/
 ├── assets/              # Oyun görselleri, ses dosyaları ve fontlar
-├── docs/                # README için ekran görüntüleri ve dokümantasyon görselleri
+├── docs/                # Proje raporu ve README görselleri
 ├── include/             # Header dosyaları
 │   ├── Game.h
 │   ├── Mole.h
@@ -161,6 +161,12 @@ Oyunun temel özelliklerini ve genel işleyişini görmek için aşağıdaki vid
 
 https://github.com/user-attachments/assets/f02d2488-d5d2-47e6-889e-c248b5a948e3
 
+## Proje Raporu
+
+Projenin detaylı raporuna aşağıdaki bağlantıdan ulaşabilirsiniz:
+
+[Whack-a-Mole Proje Raporu](docs/Whack-a-Mole-Proje-Raporu.pdf)
+
 ## Kurulum ve Derleme Rehberi
 
 Proje, **CMake** kullanılarak derlenmek üzere yapılandırılmıştır. Kodu derlemeden önce sisteminizde `C++ Derleyici (GCC/MinGW)`, `CMake` (minimum sürüm 3.16) ve `SDL2` kütüphanelerinin (SDL2, SDL2_image, SDL2_ttf, SDL2_mixer) kurulu olması gerekmektedir.
@@ -215,4 +221,4 @@ cmake --build .
 
 ## Not
 
- Projenin geliştirme süreci, yazılım mimarisi, kullanılan algoritmalar ve diğer detaylar proje raporunda daha kapsamlı şekilde açıklanmıştır.
+Projenin geliştirme süreci, yazılım mimarisi, kullanılan algoritmalar ve diğer teknik detaylar proje raporunda daha kapsamlı şekilde açıklanmıştır.
