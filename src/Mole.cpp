@@ -1,6 +1,8 @@
 #include "Mole.h"
 #include <iostream>
 
+using namespace std;
+
 // Köstebeğin texture'larını ve sahnedeki yerleşimini hazırlama
 void Mole::init(SDL_Renderer *renderer, int startX, int startY) {
     int holeWidth = 184;
@@ -19,7 +21,7 @@ void Mole::init(SDL_Renderer *renderer, int startX, int startY) {
         texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_FreeSurface(surface);
     } else {
-        std::cout << "Failed to load mole.png. Error: " << IMG_GetError() << std::endl;
+        cout << "Failed to load mole.png. Error: " << IMG_GetError() << endl;
     }
 
     surface = IMG_Load("../assets/whacked-mole.png");
@@ -27,7 +29,7 @@ void Mole::init(SDL_Renderer *renderer, int startX, int startY) {
         whackedTexture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_FreeSurface(surface);
     } else {
-        std::cout << "Failed to load whacked-mole.png. Error: " << IMG_GetError() << std::endl;
+        cout << "Failed to load whacked-mole.png. Error: " << IMG_GetError() << endl;
     }
 
     surface = IMG_Load("../assets/hole.png");
@@ -35,7 +37,7 @@ void Mole::init(SDL_Renderer *renderer, int startX, int startY) {
         holeTexture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_FreeSurface(surface);
     } else {
-        std::cout << "Failed to load hole.png. Error: " << IMG_GetError() << std::endl;
+        cout << "Failed to load hole.png. Error: " << IMG_GetError() << endl;
     }
 
     surface = IMG_Load("../assets/hole_front.png");

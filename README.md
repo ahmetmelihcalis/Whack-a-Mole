@@ -172,7 +172,7 @@ Proje, **CMake** kullanılarak derlenmek üzere yapılandırılmıştır. Kodu d
 Windows üzerinde MSYS2 UCRT64 ortamı kullanıyorsanız gerekli derleyici, CMake ve SDL2 kütüphanelerini aşağıdaki komutla kurabilirsiniz:
 
 ```bash
-pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-SDL2_image mingw-w64-ucrt-x86_64-SDL2_ttf mingw-w64-ucrt-x86_64-SDL2_mixer
+pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-make mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-SDL2_image mingw-w64-ucrt-x86_64-SDL2_ttf mingw-w64-ucrt-x86_64-SDL2_mixer
 ```
 
 ### Çalıştırma Adımları (Terminal / Komut Satırı)
